@@ -16,4 +16,5 @@ Unity3d overlay window to easily paint or preview PhysicalMaterial at SceneView
 
 # Work In Progress
 - Collider2D support
+- Physics modules optional (with version defines)
 - single file / package branches
