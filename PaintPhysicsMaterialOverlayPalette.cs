@@ -146,9 +146,12 @@ namespace GameContent.Scripts.Editor
 
 			//scroll = GUILayout.BeginScrollView(scroll, GUILayout.MaxHeight(WindowSize.y - 60));
 
-			foreach (var entry in palette.Entries3D)
+			if (palette)
 			{
-				DrawMaterialToggle(entry);
+				foreach (var entry in palette.Entries3D)
+				{
+					DrawMaterialToggle(entry);
+				}
 			}
 
 			//GUILayout.EndScrollView();
