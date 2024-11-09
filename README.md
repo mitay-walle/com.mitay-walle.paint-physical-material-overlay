@@ -13,6 +13,7 @@ Unity3d overlay window to easily paint or preview PhysicalMaterial at SceneView
 - samples scene
 - paint in isolated prefab scene support
 - undo/redo
+- collapse window to disable
 
 # Work In Progress
 - Collider2D support
