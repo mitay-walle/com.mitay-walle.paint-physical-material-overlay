@@ -13,8 +13,11 @@ Unity3d overlay window to easily paint or preview PhysicalMaterial at SceneView
 - samples scene
 - paint in isolated prefab scene support
 - undo/redo
+- collapse window to disable
+- Unity 2022+ supported
 
 # Work In Progress
 - Collider2D support
 - Physics modules optional (with version defines)
 - single file / package branches
+- Unity 2022- support
