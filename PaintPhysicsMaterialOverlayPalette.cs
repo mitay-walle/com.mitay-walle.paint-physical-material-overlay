@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEditor.Overlays;
@@ -55,7 +54,7 @@ namespace GameContent.Scripts.Editor
 	public sealed class PaintPhysicsMaterialOverlay : Overlay
 	{
 		private static GUIContent IconGUIContent = EditorGUIUtility.IconContent("d_PhysicMaterial Icon");
-
+ 
 		[SerializeField] private float MaxDistance = 50;
 		[SerializeField] private float Alpha = .25f;
 		[SerializeField] private bool DrawAll;
@@ -88,8 +87,8 @@ namespace GameContent.Scripts.Editor
 
 		private void OnToolGUI(EditorWindow sceneWindow)
 		{
-			// Window must be SceneView
 			if (!(sceneWindow is SceneView sceneView)) return;
+			if (collapsed) return;
 
 			PrefabStage stage = PrefabStageUtility.GetCurrentPrefabStage();
 			Scene scene = stage ? stage.scene : SceneManager.GetActiveScene();
