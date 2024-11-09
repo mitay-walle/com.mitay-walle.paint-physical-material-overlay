@@ -161,6 +161,7 @@ namespace GameContent.Scripts.Editor
 		private void DrawAllColliders(Scene scene, SceneView sceneView)
 		{
 			if (Alpha == 0) return;
+			if (!palette) return;
 
 			Vector3 cameraPosition = sceneView.camera.transform.position;
 
@@ -186,6 +187,7 @@ namespace GameContent.Scripts.Editor
 			bool result = scene.GetPhysicsScene().Raycast(ray.origin, ray.direction, out RaycastHit hit, 1000);
 
 			if (!result) return;
+			if (!palette) return;
 
 			DrawCollider(hit.collider, 1);
 		}
