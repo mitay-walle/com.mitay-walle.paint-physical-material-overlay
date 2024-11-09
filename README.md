@@ -9,6 +9,8 @@ Unity3d overlay window to easily paint or preview PhysicalMaterial at SceneView
 - color by physical material
 - set by mouse click in scene
 - set under cursor by hotkey
+- samples scene
 
 # Work In Progress
 - Collider2D support
+- single file / package branches
