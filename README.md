@@ -1,7 +1,8 @@
 # Paint PhysicMaterial Overlay
 Unity3d overlay window to easily paint or preview PhysicalMaterial at SceneView
 
-![image](https://github.com/user-attachments/assets/61a9dbab-014d-4492-8c1f-def8fc1feb71)
+![PaintPhysicalMaterial_Demo](https://github.com/user-attachments/assets/adc1c272-088e-4acd-9f27-3f7b1daa3094)
+
 # Features
 - palettes
 - draw all by distance
