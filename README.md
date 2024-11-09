@@ -11,6 +11,7 @@ Unity3d overlay window to easily paint or preview PhysicalMaterial at SceneView
 - set by mouse click in scene
 - set under cursor by hotkey
 - samples scene
+- paint in isolated prefab scene support
 - undo/redo
 
 # Work In Progress
