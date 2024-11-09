@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44c01e3f2dcfb6e498c1ca6c71d2d10d, type: 3}
+  m_Name: _Physics Material Palette
+  m_EditorClassIdentifier: 
+  Entries2D: []
+  Entries3D:
+  - Color: {r: 0.509434, g: 0.509434, b: 0.509434, a: 1}
+    _material: {fileID: 13400000, guid: ab6230ab07249974098c047d183b2980, type: 2}
+  - Color: {r: 1, g: 0.63847136, b: 0.3726415, a: 1}
+    _material: {fileID: 13400000, guid: f739bb5eddd6c5441912d6196a1681f6, type: 2}
+  - Color: {r: 1, g: 0.15566039, b: 0.15566039, a: 1}
+    _material: {fileID: 13400000, guid: a83a4ddfb2fcef24589024def78094b0, type: 2}

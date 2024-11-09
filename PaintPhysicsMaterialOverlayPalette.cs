@@ -1,58 +1,92 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using GameContent.Scripts.FX.Decals;
-using Plugins.Editor.SceneViews;
+using System.Reflection;
+using Sirenix.OdinInspector;
 using UnityEditor;
-using UnityEditor.EditorTools;
-using UnityEditor.Experimental.SceneManagement;
+using UnityEditor.Overlays;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace GameContent.Scripts.Editor
 {
-	/// Allow to display or paint Physical Material by mouse pointer and hotkeys
-	[EditorTool("Paint PhysicalMaterial")]
-	public class PaintPhysicMaterialTool : EditorTool
+	[CreateAssetMenu]
+	public class PaintPhysicsMaterialOverlayPalette : ScriptableObject
 	{
-		private const string PATH = "Assets/GameContent/ObjectDepot/ScriptableObjects/PhysicMaterials";
+		#if ODIN_INSPECTOR
+		[DrawWithUnity]
+		#endif
+		public List<Entry2D> Entries2D = new();
+		#if ODIN_INSPECTOR
+		[DrawWithUnity]
+		#endif
+		public List<Entry3D> Entries3D = new();
 
-		public static PaintPhysicMaterialTool active;
+		[Serializable]
+		public abstract class EntryBase
+		{
+			public Color Color = Color.white;
+			public abstract Object Material { get; }
+			public string Name => Material ? Material.name : "null";
+		}
 
-		[SerializeField] private Texture2D _icon;
+		[Serializable]
+		public sealed class Entry3D : EntryBase
+		{
+			public PhysicMaterial _material;
+			public override Object Material => _material;
+		}
+
+		[Serializable]
+		public sealed class Entry2D : EntryBase
+		{
+			public PhysicsMaterial2D _material;
+			public override Object Material => _material;
+		}
+	}
+	/// <summary>
+	/// Allow to display or paint Physical Material by mouse pointer and hotkeys
+	/// </summary>
+	[Serializable]
+	[Overlay(typeof(SceneView), "Paint Physics Material", true)]
+	public sealed class PaintPhysicsMaterialOverlay : Overlay
+	{
+		private static GUIContent IconGUIContent = EditorGUIUtility.IconContent("d_PhysicMaterial Icon");
+
 		[SerializeField] private float MaxDistance = 50;
 		[SerializeField] private float Alpha = .25f;
 		[SerializeField] private bool DrawAll;
 		[SerializeField] private bool UseLeftClick = true;
-		[SerializeField] private KeyCode paintHotKey = KeyCode.None;
-		[SerializeField] private PhysicMaterial current;
-		[SerializeField] private bool drawSettings;
-		[SerializeField] private Vector2 WindowOffset = new Vector2(20, 20);
-		[SerializeField] private Vector2 WindowSize = new Vector2(200, 460);
-		private Vector2 scroll;
-		private Shader MeshColliderShader;
+		[SerializeField] private KeyCode paintHotKey = KeyCode.V;
+		private PaintPhysicsMaterialOverlayPalette.EntryBase current;
+		[SerializeField] private PaintPhysicsMaterialOverlayPalette palette;
+		//[SerializeField] private Vector2 WindowSize = new Vector2(200, 460);
+		//private Vector2 scroll;
 		private Material wireMat;
 		private GUIContent _guiContent;
-		private List<PhysicMaterial> physicMaterials = new List<PhysicMaterial>();
+		private Shader MeshColliderShader;
 
-		private RCC_GroundMaterials rccGroundMaterials => RCC_GroundMaterials.Instance;
+		private static readonly int ColorProperty = Shader.PropertyToID("_Color");
 
-		public override GUIContent toolbarIcon => _guiContent;
-
-		private OverlayWindowContainer _window;
-		private static readonly int Color = Shader.PropertyToID("_Color");
-
-		protected void OnEnable()
+		public override VisualElement CreatePanelContent()
 		{
-			_guiContent = new GUIContent("Paint Physical Material", _icon, "Allow to display or paint Physical Material by mouse pointer and hotkeys");
-			ToolManager.activeToolChanging -= OnActiveToolWillChange;
-			ToolManager.activeToolChanging += OnActiveToolWillChange;
-			ToolManager.activeToolChanged -= OnActiveToolDidChange;
-			ToolManager.activeToolChanged += OnActiveToolDidChange;
-			RCC_GroundMaterials.Load();
-			_window = new OverlayWindowContainer(_guiContent, OnWindowGUI, -1000, this, OverlayWindowContainer.WindowDisplayOption.OneWindowPerTitle);
+			var root = new VisualElement { name = nameof(PaintPhysicsMaterialOverlay) };
+			root.Add(new IMGUIContainer(OnWindowGUI));
+
+			_guiContent = IconGUIContent;
+			_guiContent.text = "Paint Physical Material";
+			_guiContent.tooltip = "Allow to display or paint Physical Material by mouse pointer and hotkeys";
+
+			SceneView.duringSceneGui -= OnToolGUI;
+			SceneView.duringSceneGui += OnToolGUI;
+
+			return root;
 		}
 
-		public override void OnToolGUI(EditorWindow sceneWindow)
+		private void OnToolGUI(EditorWindow sceneWindow)
 		{
 			// Window must be SceneView
 			if (!(sceneWindow is SceneView sceneView)) return;
@@ -67,11 +101,11 @@ namespace GameContent.Scripts.Editor
 			}
 
 			bool isClicked = UseLeftClick && Event.current.type == EventType.MouseDown && Event.current.button == 0 &&
-			                 Event.current.isMouse;
+				Event.current.isMouse;
 
 			bool isHotkey = paintHotKey != KeyCode.None && Event.current.type == EventType.KeyDown &&
-			                Event.current.keyCode == paintHotKey &&
-			                Event.current.isKey;
+				Event.current.keyCode == paintHotKey &&
+				Event.current.isKey;
 
 			if (isHotkey || isClicked)
 			{
@@ -83,16 +117,10 @@ namespace GameContent.Scripts.Editor
 
 				SwapMaterialUnderCursor(scene);
 			}
-
-			_window.OnGUI();
 		}
 
-		private void OnWindowGUI(object target, SceneView sceneView)
+		private void OnWindowGUI()
 		{
-			Handles.BeginGUI();
-
-			EditorGUILayout.ObjectField(MonoScript.FromScriptableObject(this), typeof(MonoScript), true);
-
 			float lastLabelWidth = EditorGUIUtility.labelWidth;
 			EditorGUIUtility.labelWidth = 100;
 
@@ -103,26 +131,29 @@ namespace GameContent.Scripts.Editor
 
 			EditorGUI.BeginChangeCheck();
 
-			KeyCode newKey = (KeyCode)EditorGUILayout.EnumPopup("Paint", paintHotKey);
+			KeyCode newKey = (KeyCode)EditorGUILayout.EnumPopup("Hotkey", paintHotKey);
 
 			if (EditorGUI.EndChangeCheck())
 			{
-				Undo.RecordObject(this, "paintHotKey");
+				//Undo.RecordObject(this, "paintHotKey");
 				paintHotKey = newKey;
 			}
 
-			EditorGUILayout.ObjectField(current, typeof(PhysicMaterial), false);
+			GUI.enabled = false;
+			EditorGUILayout.ObjectField(current?.Material, typeof(Object), false);
+			GUI.enabled = true;
 
-			scroll = GUILayout.BeginScrollView(scroll, GUILayout.MaxHeight(WindowSize.y - 60));
+			palette = (PaintPhysicsMaterialOverlayPalette)EditorGUILayout.ObjectField(palette, typeof(PaintPhysicsMaterialOverlayPalette), false);
 
-			foreach (PhysicMaterial material in physicMaterials)
+			//scroll = GUILayout.BeginScrollView(scroll, GUILayout.MaxHeight(WindowSize.y - 60));
+
+			foreach (var entry in palette.Entries3D)
 			{
-				DrawMaterialToggle(material);
+				DrawMaterialToggle(entry);
 			}
 
-			GUILayout.EndScrollView();
+			//GUILayout.EndScrollView();
 			EditorGUIUtility.labelWidth = lastLabelWidth;
-			Handles.EndGUI();
 		}
 
 		private void DrawAllColliders(Scene scene, SceneView sceneView)
@@ -139,7 +170,7 @@ namespace GameContent.Scripts.Editor
 			foreach (Collider collider in colliders)
 			{
 				if ((collider.bounds.center - cameraPosition).sqrMagnitude < MaxDistance * MaxDistance &&
-				    GeometryUtility.TestPlanesAABB(planes, collider.bounds))
+					GeometryUtility.TestPlanesAABB(planes, collider.bounds))
 				{
 					DrawCollider(collider, Alpha);
 				}
@@ -162,42 +193,35 @@ namespace GameContent.Scripts.Editor
 			if (collider.isTrigger) return;
 			if (!collider.enabled) return;
 
+			var entry = palette.Entries3D.FirstOrDefault(e => e.Material == collider.sharedMaterial);
+
+			if (entry == null) return;
+			Color color = entry.Color.SetAlpha(entry.Color.a * alpha);
 			switch (collider)
 			{
 				case BoxCollider box:
-				{
-					Matrix4x4 old = Handles.matrix;
-					Handles.matrix = box.transform.localToWorldMatrix;
-
-					RCC_GroundMaterials.GroundMaterialFrictions mat = RCC_GroundMaterials.GetSurfaceData(box.sharedMaterial);
-
-					Handles.color = DecalFXSubHolder.GetColor(mat.matType).SetAlpha(alpha);
-
-					Handles.DrawWireCube(box.center, box.size);
-					Handles.matrix = old;
-					break;
-				}
+					{
+						DrawCube(box, color);
+						break;
+					}
 
 				case CapsuleCollider capsule:
-				{
-					RCC_GroundMaterials.GroundMaterialFrictions mat = RCC_GroundMaterials.GetSurfaceData(capsule.sharedMaterial);
-					DrawCapsule(capsule, DecalFXSubHolder.GetColor(mat.matType).SetAlpha(alpha));
-					break;
-				}
+					{
+						DrawCapsule(capsule, color);
+						break;
+					}
 
 				case SphereCollider sphere:
-				{
-					RCC_GroundMaterials.GroundMaterialFrictions mat = RCC_GroundMaterials.GetSurfaceData(sphere.sharedMaterial);
-					DrawSphere(sphere, DecalFXSubHolder.GetColor(mat.matType).SetAlpha(alpha));
-					break;
-				}
+					{
+						DrawSphere(sphere, color);
+						break;
+					}
 
 				case MeshCollider mesh:
-				{
-					RCC_GroundMaterials.GroundMaterialFrictions mat = RCC_GroundMaterials.GetSurfaceData(mesh.sharedMaterial);
-					DrawMesh(mesh, DecalFXSubHolder.GetColor(mat.matType).SetAlpha(alpha));
-					break;
-				}
+					{
+						DrawMesh(mesh, color);
+						break;
+					}
 			}
 		}
 
@@ -217,54 +241,33 @@ namespace GameContent.Scripts.Editor
 
 		void SwapMaterial(Collider collider)
 		{
-			Undo.RecordObject(collider, $"swap material {current?.name}");
-			collider.sharedMaterial = current;
+			if (current is PaintPhysicsMaterialOverlayPalette.Entry3D entry3D)
+			{
+				Undo.RecordObject(collider, $"swap material {current.Material?.name}");
+				collider.sharedMaterial = entry3D._material;
+			}
 		}
 
-		void DrawMaterialToggle(PhysicMaterial material)
+		void DrawMaterialToggle(PaintPhysicsMaterialOverlayPalette.EntryBase entry)
 		{
-			if (material == null) return;
+			if (entry == null) return;
+			GUI.color = entry.Color.SetAlpha(1);
 
-			bool newResult = GUILayout.Toggle(material == current, material.name, "button");
+			bool newResult = GUILayout.Toggle(entry == current, entry.Name, "button");
+			GUI.color = Color.white;
 			if (newResult)
 			{
-				current = material;
+				current = entry;
 			}
 		}
 
-		public void Init()
+		private void DrawCube(BoxCollider box, Color color)
 		{
-			// SceneView.duringSceneGui -= OnWindowGUI;
-			// SceneView.duringSceneGui += OnWindowGUI;
-
-			active = this;
-
-			physicMaterials = AssetDatabase.FindAssets($"t:{nameof(PhysicMaterial)}", new[] { PATH })
-				.Select(AssetDatabase.GUIDToAssetPath)
-				.Select(AssetDatabase.LoadAssetAtPath<PhysicMaterial>).ToList();
-
-			physicMaterials.Insert(0, null);
-			EditorPrefs.SetString("PrefferedTool", typeof(PaintPhysicMaterialTool).FullName);
-		}
-
-		void OnActiveToolWillChange()
-		{
-			if (ToolManager.IsActiveTool(this))
-			{
-				Init();
-			}
-		}
-
-		void OnActiveToolDidChange()
-		{
-			if (ToolManager.IsActiveTool(this))
-			{
-				Init();
-			}
-			else
-			{
-				//SceneView.duringSceneGui -= OnWindowGUI;
-			}
+			Matrix4x4 old = Handles.matrix;
+			Handles.color = color;
+			Handles.matrix = box.transform.localToWorldMatrix;
+			Handles.DrawWireCube(box.center, box.size);
+			Handles.matrix = old;
 		}
 
 		private void DrawCapsule(CapsuleCollider capsule, Color color)
@@ -281,7 +284,7 @@ namespace GameContent.Scripts.Editor
 #endif
 			switch (capsule.direction)
 			{
-				case 0: //x axis
+				case 0://x axis
 					//adjust radius by the bigger scale.
 					radius *= scale.y > scale.z ? scale.y : scale.z;
 					// adjust the offset to top and bottom mid points for spheres based on radius / scale in that direction
@@ -387,12 +390,20 @@ namespace GameContent.Scripts.Editor
 			if (!wireMat) wireMat = new Material(MeshColliderShader);
 			if (MeshColliderShader == null || mesh.sharedMesh == null) return;
 
-			wireMat.SetColor(Color, color);
+			wireMat.SetColor(ColorProperty, color);
 			wireMat.SetPass(0);
 			GL.wireframe = true;
 			Graphics.DrawMeshNow(mesh.sharedMesh, mesh.transform.localToWorldMatrix);
 			GL.wireframe = false;
 			// Graphics.DrawMeshNow(mesh.sharedMesh, mesh.transform.localToWorldMatrix);
+		}
+	}
+	public static class Utility
+	{
+		public static Color SetAlpha(this Color color, float alpha)
+		{
+			color.a = alpha;
+			return color;
 		}
 	}
 }
