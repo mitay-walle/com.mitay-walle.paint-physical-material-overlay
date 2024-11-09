@@ -1,10 +1,14 @@
 # Paint PhysicMaterial Overlay
 Unity3d overlay window to easily paint or preview PhysicalMaterial at SceneView
 
-![](https://github.com/mitay-walle/PaintPhysicMaterialTool/blob/main/Window%20preview.png)
+![image](https://github.com/user-attachments/assets/61a9dbab-014d-4492-8c1f-def8fc1feb71)
+# Features
+- palettes
+- draw all by distance
+- 3D  colliders support
+- color by physical material
+- set by mouse click in scene
+- set under cursor by hotkey
 
 # Work In Progress
 - Collider2D support
-- coloring customization
-- palettes
-- rework to [custom overlay](https://docs.unity3d.com/2022.3/Documentation/Manual/overlays-custom.html)
