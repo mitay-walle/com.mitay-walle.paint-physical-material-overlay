@@ -243,7 +243,7 @@ namespace GameContent.Scripts.Editor
 		{
 			if (current is PaintPhysicsMaterialOverlayPalette.Entry3D entry3D)
 			{
-				Undo.RecordObject(collider, $"swap material {current.Material?.name}");
+				Undo.RecordObject(collider, $"swap material {current.Name}");
 				collider.sharedMaterial = entry3D._material;
 			}
 		}

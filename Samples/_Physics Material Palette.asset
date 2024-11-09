@@ -16,7 +16,9 @@ MonoBehaviour:
   Entries3D:
   - Color: {r: 0.509434, g: 0.509434, b: 0.509434, a: 1}
     _material: {fileID: 13400000, guid: ab6230ab07249974098c047d183b2980, type: 2}
-  - Color: {r: 0.37254906, g: 0.90626556, b: 1, a: 1}
+  - Color: {r: 0.37254906, g: 1, b: 0.9644473, a: 0.7019608}
     _material: {fileID: 13400000, guid: f739bb5eddd6c5441912d6196a1681f6, type: 2}
   - Color: {r: 1, g: 0.15566039, b: 0.15566039, a: 1}
     _material: {fileID: 13400000, guid: a83a4ddfb2fcef24589024def78094b0, type: 2}
+  - Color: {r: 1, g: 1, b: 1, a: 0}
+    _material: {fileID: 0}
