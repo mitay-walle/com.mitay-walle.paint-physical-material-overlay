@@ -386,7 +386,8 @@ namespace GameContent.Scripts.Editor
 		private void DrawMesh(MeshCollider mesh, Color color)
 		{
 			// try to find mesh shader
-			if (MeshColliderShader == null) MeshColliderShader = Shader.Find("Custom/EasyColliderMeshColliderPreview");
+			if (MeshColliderShader == null) MeshColliderShader = Shader.Find("Unlit/Color");
+			if (!MeshColliderShader) return;
 			if (!wireMat) wireMat = new Material(MeshColliderShader);
 			if (MeshColliderShader == null || mesh.sharedMesh == null) return;
 
