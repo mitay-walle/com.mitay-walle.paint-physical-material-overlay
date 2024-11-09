@@ -6,7 +6,7 @@ Unity3d overlay window to easily paint or preview PhysicalMaterial at SceneView
 - palettes
 - draw all by distance
 - 3D colliders support (Box, Capsule, Sphere, MeshCollider)
-- color by physical material
+- colored wireframe by physical material
 - set by mouse click in scene
 - set under cursor by hotkey
 - samples scene
