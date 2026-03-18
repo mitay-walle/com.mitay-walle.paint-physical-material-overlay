@@ -33,9 +33,9 @@ namespace GameContent.Scripts.Editor
 		}
 
 		[Serializable]
-		public sealed class Entry3D : EntryBase
+		public sealed class  : EntryBase
 		{
-			public PhysicMaterial _material;
+			public PhysicsMaterial _material;
 			public override Object Material => _material;
 		}
 
@@ -245,7 +245,7 @@ namespace GameContent.Scripts.Editor
 
 		void SwapMaterial(Collider collider)
 		{
-			if (current is PaintPhysicsMaterialOverlayPalette.Entry3D entry3D)
+			if (current is PaintPhysicsMaterialOverlayPalette. )
 			{
 				Undo.RecordObject(collider, $"swap material {current.Name}");
 				collider.sharedMaterial = entry3D._material;
