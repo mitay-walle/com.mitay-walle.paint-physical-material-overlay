@@ -1,0 +1,34 @@
+{
+  "name": "com.mitay-walle.paint-physical-material-overlay",
+  "version": "1.0.0",
+  "displayName": "Paint PhysicMaterial Overlay",
+  "description": "Unity SceneView overlay for previewing and painting 3D PhysicsMaterial assignments on colliders.",
+  "unity": "2021.3",
+  "documentationUrl": "https://github.com/mitay-walle/com.mitay-walle.paint-physical-material-overlay/blob/main/README.md",
+  "licensesUrl": "https://github.com/mitay-walle/com.mitay-walle.paint-physical-material-overlay/blob/main/LICENSE",
+  "dependencies": {
+    "com.unity.modules.imgui": "1.0.0",
+    "com.unity.modules.physics": "1.0.0",
+    "com.unity.modules.physics2d": "1.0.0",
+    "com.unity.modules.uielements": "1.0.0"
+  },
+  "keywords": [
+    "Physics",
+    "PhysicMaterial",
+    "SceneView",
+    "Overlay",
+    "Editor"
+  ],
+  "author": {
+    "name": "mitay-walle",
+    "email": "mitay-walle91@mail.ru",
+    "url": "https://github.com/mitay-walle"
+  },
+  "samples": [
+    {
+      "displayName": "Demo",
+      "description": "Example physics materials, palette, prefab, and scene for the Paint PhysicMaterial Overlay.",
+      "path": "Samples~/Demo"
+    }
+  ]
+}
