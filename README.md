@@ -17,7 +17,7 @@ Unity3d overlay window to easily paint or preview PhysicalMaterial at SceneView
 - Unity 2021+ supported
 
 # Installation
-- add script `PaintPhysicsMaterialOverlayPalette.cs` in `Project/Assets/.../Editor/..`
+- install by Git URL. Official Instruction: https://docs.unity3d.com/Documentation/Manual/upm-ui-giturl.html
 
 # Usage
 - create palette: `Assets/Create/Paint Physics Material Palette`
