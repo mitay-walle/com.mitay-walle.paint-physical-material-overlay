@@ -11,8 +11,7 @@ namespace LevelDesign
 	[Overlay(typeof(SceneView), "Paint Physics Material")]
 	public sealed class PaintPhysicsMaterialOverlay : Overlay
 	{
-		private static readonly GUIContent IconGUIContent = EditorGUIUtility.IconContent("d_PhysicMaterial Icon");
-
+		private static readonly GUIContent IconGUIContent = new GUIContent();
 		private GUIContent _guiContent;
 
 		public override void OnCreated()
