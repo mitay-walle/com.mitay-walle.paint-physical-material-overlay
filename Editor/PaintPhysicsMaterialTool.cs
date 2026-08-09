@@ -22,7 +22,7 @@ namespace LevelDesign
 		{
 			get
 			{
-				_iconContent ??= EditorGUIUtility.IconContent("d_PhysicMaterial Icon", "Paint Physics Material");
+				_iconContent ??= new GUIContent("Paint Physics Material");
 				return _iconContent;
 			}
 		}
